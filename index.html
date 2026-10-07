@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f3f8f">
+<title>BusCheck — School Transport Safety</title>
+<style>
+:root{
+  --bg:#f6f8fb;--surface:#fff;--subtle:#f1f5f9;--line:#dbe3ed;--text:#142033;--muted:#667085;
+  --primary:#155eef;--primary2:#0f4fd8;--primarySoft:#eaf1ff;--success:#067647;--successSoft:#eaf8f1;
+  --warning:#b54708;--warningSoft:#fff4e5;--danger:#b42318;--dangerSoft:#fdecec;--info:#026aa2;--infoSoft:#e8f5fb;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 8px 24px rgba(16,24,40,.06);--r:18px;--focus:0 0 0 3px rgba(21,94,239,.22);
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:none;box-shadow:var(--focus)}
+.app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+aside{position:sticky;top:0;height:100vh;background:#0c1a2f;color:#fff;padding:20px 14px;display:flex;flex-direction:column;z-index:10}
+.brand{display:flex;gap:12px;align-items:center;padding:4px 8px 22px}.logo{width:42px;height:42px;border-radius:13px;background:var(--primary);display:grid;place-items:center;font-weight:900;font-size:20px}.brand b{display:block;font-size:18px}.brand small{display:block;color:#9fb0c6;font-size:11px;letter-spacing:.06em}
+.nav{display:grid;gap:6px}.nav button{min-height:46px;border:0;border-radius:12px;background:transparent;color:#b9c7d8;text-align:left;padding:0 12px;font-weight:700}.nav button:hover,.nav button.active{background:#172a43;color:#fff}.nav button.active{box-shadow:inset 3px 0 0 #5b8cff}
+.asideFoot{margin-top:auto;color:#9fb0c6;font-size:12px;padding:12px 8px}.asideFoot .ready{display:inline-flex;align-items:center;gap:7px;background:#0f2a26;color:#9be4c2;border-radius:999px;padding:7px 10px;font-weight:800;margin-bottom:10px}.dot{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
+main{min-width:0;padding:28px 32px 80px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}.eyebrow{margin:0;color:var(--primary);font-size:11px;font-weight:900;letter-spacing:.12em}.topbar h1{margin:2px 0 0;font-size:clamp(27px,3vw,38px);letter-spacing:-.035em}.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{min-height:44px;border-radius:12px;padding:0 15px;border:1px solid transparent;font-weight:800}.btn.primary{background:var(--primary);color:#fff}.btn.primary:hover{background:var(--primary2)}.btn.secondary{background:#fff;color:var(--text);border-color:var(--line)}.btn.ghost{background:transparent;color:var(--text)}
+.view{display:none}.view.active{display:block;animation:fade .18s ease}@keyframes fade{from{opacity:.55;transform:translateY(3px)}to{opacity:1;transform:none}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}.strip{padding:14px 17px;border-radius:16px;border:1px solid #cfddff;background:linear-gradient(90deg,#edf4ff,#f8fbff);display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:16px}.strip strong,.strip span{display:block}.strip span{font-size:13px;color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:6px;min-height:27px;padding:3px 10px;border-radius:999px;font-weight:850;font-size:12px;white-space:nowrap}.success{background:var(--successSoft);color:var(--success)}.warning{background:var(--warningSoft);color:var(--warning)}.danger{background:var(--dangerSoft);color:var(--danger)}.info{background:var(--infoSoft);color:var(--info)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:14px}.kpi{padding:18px}.kpi>span{font-size:13px;font-weight:750;color:var(--muted)}.kpi strong{display:block;font-size:34px;line-height:1.15;margin:6px 0}.kpi small{color:var(--muted)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);gap:14px}.panel{padding:20px}.panelHead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}.panel h2,.panel h3{margin:0 0 4px}.panel p{margin:0;color:var(--muted)}
+.fleetRow{display:grid;grid-template-columns:minmax(110px,1fr) 2fr auto;gap:14px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}.fleetRow:first-child{border-top:0}.fleetRow small{display:block;color:var(--muted)}.progressText{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}.progress{height:9px;border-radius:999px;background:#e8edf4;overflow:hidden}.progress i{display:block;height:100%;background:var(--primary);border-radius:inherit}
+.event{display:grid;grid-template-columns:10px 1fr auto;gap:10px;padding:12px 0;border-top:1px solid var(--line);align-items:start}.event:first-child{border-top:0}.event b{display:block;font-size:13px}.event span,.event time{color:var(--muted);font-size:12px}
+.sectionHead{display:flex;justify-content:space-between;gap:18px;align-items:end;margin-bottom:16px}.sectionHead h2{margin:0;font-size:28px}.sectionHead p{margin:4px 0 0;color:var(--muted)}.filters{display:flex;gap:8px;flex-wrap:wrap}.filter{min-height:40px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:0 13px;font-weight:750}.filter.active{background:var(--primarySoft);color:var(--primary);border-color:#bcd0ff}
+.fleetGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.fleetCard{padding:18px}.fleetTitle{display:flex;justify-content:space-between;gap:10px}.fleetTitle h3{margin:0}.fleetTitle p{margin:2px 0 0;color:var(--muted)}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.metric{background:var(--subtle);border-radius:12px;padding:11px}.metric span{display:block;font-size:11px;color:var(--muted)}.metric strong{font-size:20px}.fleetActions{display:flex;gap:8px;margin-top:15px}
+.scanLayout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:14px}.cameraCard{padding:18px}.cameraHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.cameraHead h2{margin:8px 0 2px}.cameraHead p{margin:0;color:var(--muted)}.cameraFrame{position:relative;background:#081220;border-radius:18px;overflow:hidden;aspect-ratio:16/9;margin:16px 0;color:#c8d3e0;display:grid;place-items:center}.cameraFrame video{width:100%;height:100%;object-fit:cover;display:block}.cameraEmpty{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:4px;background:radial-gradient(circle at center,#172b46,#081220)}.cameraEmpty span{font-size:13px;color:#98a8ba}.guide{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(32%,210px);aspect-ratio:3/4;border:2px solid rgba(255,255,255,.85);border-radius:45%;box-shadow:0 0 0 999px rgba(0,0,0,.12);pointer-events:none}.scannerControls{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--subtle);padding:4px;border-radius:13px}.seg button{min-height:44px;border:0;border-radius:10px;background:transparent;font-weight:800;color:var(--muted);padding:0 16px}.seg button[aria-pressed="true"]{background:#fff;color:var(--primary);box-shadow:var(--shadow)}.scanActions{display:flex;gap:8px}
+.side{display:grid;gap:14px;align-content:start}.scanState{padding:20px}.stateBox{text-align:center;padding:22px 8px}.stateIcon{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;margin:0 auto 10px;background:var(--primarySoft);color:var(--primary);font-weight:900}.stateBox h3{margin:0 0 5px}.stateBox p{margin:0;color:var(--muted)}.queue{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px}.safety{padding:18px}.safety h3{margin:10px 0 5px}.safety p{margin:0;color:var(--muted)}
+.tableCard{overflow:hidden}.tableWrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:14px 16px;border-bottom:1px solid var(--line);text-align:left}th{background:#f8fafc;font-size:12px;color:var(--muted);letter-spacing:.03em}td{font-size:14px}.student b,.student small{display:block}.student small{color:var(--muted)}.search{min-height:44px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:0 13px;min-width:min(320px,100%)}
+.parentWrap{max-width:900px}.parentHead{display:flex;justify-content:space-between;gap:16px;align-items:start;margin-bottom:14px}.parentHead h2{margin:1px 0 3px}.parentHead p{margin:0;color:var(--muted)}.child{display:flex;align-items:center;gap:14px;padding:17px}.avatar{width:52px;height:52px;border-radius:16px;background:var(--primarySoft);color:var(--primary);display:grid;place-items:center;font-weight:900}.childInfo{flex:1}.childInfo span,.childInfo strong,.childInfo small{display:block}.childInfo small{color:var(--muted)}.parentGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.ptl{display:grid;gap:14px;margin-top:16px}.ptl div{display:flex;gap:10px;align-items:flex-start}.ptl i{width:14px;height:14px;margin-top:4px;border-radius:50%;border:2px solid #a8b3c2}.ptl .done i{background:var(--success);border-color:var(--success)}
+.mobileNav{display:none}
+@media(max-width:1080px){.kpis{grid-template-columns:repeat(2,1fr)}.fleetGrid{grid-template-columns:1fr 1fr}.grid2,.scanLayout{grid-template-columns:1fr}}
+@media(max-width:760px){.app{display:block}aside{display:none}main{padding:18px 14px 90px}.topbar{align-items:flex-start}.topbar .actions .secondary{display:none}.kpis{grid-template-columns:1fr 1fr;gap:10px}.kpi{padding:14px}.kpi strong{font-size:28px}.fleetGrid{grid-template-columns:1fr}.fleetRow{grid-template-columns:1fr auto}.fleetRow .fleetProg{grid-column:1/-1}.sectionHead,.parentHead{align-items:flex-start;flex-direction:column}.parentGrid{grid-template-columns:1fr}.mobileNav{position:fixed;z-index:20;left:0;right:0;bottom:0;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);gap:4px}.mobileNav button{min-height:48px;border:0;background:transparent;border-radius:12px;font-size:12px;font-weight:800;color:var(--muted)}.mobileNav .scan{background:var(--primary);color:#fff}.cameraFrame{aspect-ratio:3/4}.guide{width:46%}.scannerControls{align-items:stretch}.seg,.scanActions{width:100%}.scanActions .btn{flex:1}.strip{align-items:flex-start;flex-direction:column}.metrics{grid-template-columns:1fr}.topbar h1{font-size:28px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <div class="brand"><div class="logo">B</div><div><b>BusCheck</b><small>SCHOOL TRANSPORT SAFETY</small></div></div>
+  <div class="nav">
+    <button class="active" data-view="overview">Tổng quan</button>
+    <button data-view="fleet">Danh sách xe</button>
+    <button data-view="scanner">Quét khuôn mặt</button>
+    <button data-view="students">Học sinh</button>
+    <button data-view="parent">Phụ huynh</button>
+  </div>
+  <div class="asideFoot"><div class="ready"><span class="dot"></span> Hệ thống sẵn sàng</div><div>Thiết kế ưu tiên thao tác nhanh, trạng thái rõ ràng và an toàn vận hành.</div></div>
+</aside>
+<main>
+<header class="topbar">
+  <div><p class="eyebrow">BUSCHECK CONTROL CENTER</p><h1 id="pageTitle">Tổng quan vận hành</h1></div>
+  <div class="actions"><button class="btn secondary" data-view="parent">Giao diện phụ huynh</button><button class="btn primary" data-view="scanner">Mở máy quét</button></div>
+</header>
+
+<section class="view active" id="view-overview">
+  <div class="strip"><div><strong>Chuyến sáng đang hoạt động</strong><span>Ưu tiên học sinh chưa lên xe và các lượt quét cần xác nhận.</span></div><span class="badge info">Đang theo dõi</span></div>
+  <div class="kpis">
+    <article class="card kpi"><span>Xe đang hoạt động</span><strong>3</strong><small>3/3 trực tuyến</small></article>
+    <article class="card kpi"><span>Đã lên xe</span><strong>38</strong><small>trong 46 học sinh</small></article>
+    <article class="card kpi"><span>Chưa lên xe</span><strong>8</strong><small>cần kiểm tra trước khi rời điểm đón</small></article>
+    <article class="card kpi"><span>Cảnh báo</span><strong>2</strong><small>1 lượt cần xác nhận · 1 thiết bị yếu</small></article>
+  </div>
+  <div class="grid2">
+    <article class="card panel"><div class="panelHead"><div><h2>Tình trạng xe</h2><p>Tiến độ lên/xuống theo từng xe.</p></div><button class="btn ghost" data-view="fleet">Xem tất cả</button></div><div id="fleetMini"></div></article>
+    <article class="card panel"><div class="panelHead"><div><h2>Sự kiện gần đây</h2><p>Chỉ giữ những sự kiện có ý nghĩa vận hành.</p></div></div><div id="timeline"></div></article>
+  </div>
+</section>
+
+<section class="view" id="view-fleet">
+  <div class="sectionHead"><div><h2>Danh sách xe</h2><p>Nhìn một lần là biết xe nào đủ người và còn ai trên xe.</p></div><div class="filters"><button class="filter active">Tất cả</button><button class="filter">Đang chạy</button><button class="filter">Cần chú ý</button></div></div>
+  <div class="fleetGrid" id="fleetGrid"></div>
+</section>
+
+<section class="view" id="view-scanner">
+  <div class="scanLayout">
+    <article class="card cameraCard">
+      <div class="cameraHead"><div><span id="camBadge" class="badge info"><span class="dot"></span> Camera đang tắt</span><h2>Quét liên tục</h2><p>Camera thật chạy trên HTTPS. Engine nhận diện được nối vào lớp trạng thái này.</p></div><button class="btn secondary" id="flip">Đổi camera</button></div>
+      <div class="cameraFrame"><video id="camera" autoplay muted playsinline></video><div class="guide"></div><div class="cameraEmpty" id="cameraEmpty"><strong>Camera chưa bật</strong><span>Bấm “Mở camera” để bắt đầu.</span></div></div>
+      <div class="scannerControls"><div class="seg"><button aria-pressed="true" data-mode="board">Lên xe</button><button aria-pressed="false" data-mode="leave">Xuống xe</button></div><div class="scanActions"><button class="btn primary" id="cameraToggle">Mở camera</button><button class="btn secondary" id="scanToggle" disabled>Bắt đầu quét</button></div></div>
+    </article>
+    <div class="side">
+      <article class="card scanState"><p class="eyebrow">TRẠNG THÁI NHẬN DIỆN</p><div class="stateBox" id="recognition"><div class="stateIcon">ID</div><h3>Sẵn sàng quét</h3><p>Kết quả chỉ được ghi khi engine nhận diện xác nhận đủ số lần liên tiếp.</p></div><div class="queue"><span>Hàng chờ lưu nền</span><strong>0</strong></div></article>
+      <article class="card safety"><span class="badge warning">Cần lưu ý</span><h3>Kiểm tra thủ công vẫn bắt buộc</h3><p>Nhận diện khuôn mặt chỉ hỗ trợ điểm danh, không thay thế kiểm tra xe thực tế.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="view-students">
+  <div class="sectionHead"><div><h2>Học sinh</h2><p>Ưu tiên trạng thái đăng ký khuôn mặt và chuyến hiện tại.</p></div><input id="studentSearch" class="search" placeholder="Tìm tên hoặc mã học sinh"></div>
+  <article class="card tableCard"><div class="tableWrap"><table><thead><tr><th>Học sinh</th><th>Lớp</th><th>Xe</th><th>Khuôn mặt</th><th>Hôm nay</th></tr></thead><tbody id="studentBody"></tbody></table></div></article>
+</section>
+
+<section class="view" id="view-parent">
+  <div class="parentWrap">
+    <div class="parentHead"><div><p class="eyebrow">TÀI KHOẢN PHỤ HUYNH</p><h2>Chào buổi sáng</h2><p>Thông tin quan trọng nhất: con đang ở đâu và trạng thái chuyến.</p></div><span class="badge success">Thông báo đã bật</span></div>
+    <article class="card child"><div class="avatar">NA</div><div class="childInfo"><span>Nguyễn An</span><strong>Đã lên xe an toàn</strong><small>Xe 03 · 07:12 · Điểm đón A</small></div><span class="badge success">Đã lên xe</span></article>
+    <div class="parentGrid">
+      <article class="card panel"><h3>Hành trình hôm nay</h3><div class="ptl"><div class="done"><i></i><span><b>07:05</b> Xe đến điểm đón</span></div><div class="done"><i></i><span><b>07:12</b> Nguyễn An đã lên xe</span></div><div><i></i><span><b>Dự kiến 07:40</b> Đến trường</span></div></div></article>
+      <article class="card panel"><h3>Thông báo</h3><p>Phụ huynh có thể nhận push notification khi không mở ứng dụng sau khi backend/Firebase được nối.</p><button class="btn secondary" id="notifyTest" style="margin-top:16px">Kiểm tra quyền thông báo</button></article>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+
+<nav class="mobileNav"><button data-view="overview">Tổng quan</button><button data-view="fleet">Xe</button><button data-view="scanner" class="scan">Quét</button><button data-view="students">HS</button><button data-view="parent">PH</button></nav>
+
+<script>
+var fleet=[
+{id:"Xe 01",route:"Tuyến Bắc",boarded:12,total:12,left:10,onboard:2,status:"Ổn định"},
+{id:"Xe 02",route:"Tuyến Trung tâm",boarded:16,total:18,left:0,onboard:16,status:"Cần chú ý"},
+{id:"Xe 03",route:"Tuyến Nam",boarded:10,total:12,left:8,onboard:2,status:"Ổn định"}];
+var events=[
+["Nguyễn An đã lên Xe 03","Nhận diện đã xác nhận và lưu thành công","07:12"],
+["Xe 02 còn 2 học sinh chưa lên","Kiểm tra trước khi rời điểm đón","07:11"],
+["Lê Minh đã xuống Xe 01","Lượt xuống xe được ghi nhận","07:09"],
+["Thiết bị Xe 02 kết nối yếu","Tiếp tục quét, dữ liệu sẽ lưu khi mạng ổn định","07:07"]];
+var students=[
+["Nguyễn An","HS001","HSB2006E_MAS4","Xe 03","Đã đăng ký","Đã lên xe"],
+["Trần Minh","HS002","HSB2006E_MAS4","Xe 03","Đã đăng ký","Đã xuống xe"],
+["Lê Hoàng","HS003","HSB2006E_MAS4","Xe 02","Chưa đăng ký","Chưa lên xe"],
+["Phạm Gia Hân","HS004","HSB2006E_MAS4","Xe 01","Đã đăng ký","Đã lên xe"],
+["Đỗ Khánh","HS005","HSB2006E_MAS4","Xe 02","Đã đăng ký","Chưa lên xe"],
+["Vũ Ngọc","HS006","HSB2006E_MAS4","Xe 01","Đã đăng ký","Đã xuống xe"]];
+var titles={overview:"Tổng quan vận hành",fleet:"Danh sách xe",scanner:"Quét khuôn mặt",students:"Học sinh",parent:"Giao diện phụ huynh"};
+
+function showView(n){
+ document.querySelectorAll(".view").forEach(function(v){v.classList.remove("active")});
+ var el=document.getElementById("view-"+n); if(el) el.classList.add("active");
+ document.querySelectorAll("aside [data-view]").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-view")===n)});
+ document.getElementById("pageTitle").textContent=titles[n]||"BusCheck";
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll("[data-view]").forEach(function(b){b.addEventListener("click",function(){showView(b.getAttribute("data-view"))})});
+
+function fleetRow(f){
+ var p=Math.round(f.boarded/f.total*100), cls=f.status==="Ổn định"?"success":"warning";
+ return '<div class="fleetRow"><div><b>'+f.id+'</b><small>'+f.route+'</small></div><div class="fleetProg"><div class="progressText"><span>Đã lên '+f.boarded+'/'+f.total+'</span><span>'+p+'%</span></div><div class="progress"><i style="width:'+p+'%"></i></div></div><span class="badge '+cls+'">'+f.status+'</span></div>';
+}
+document.getElementById("fleetMini").innerHTML=fleet.map(fleetRow).join("");
+document.getElementById("timeline").innerHTML=events.map(function(e,i){return '<div class="event"><span class="dot" style="color:'+(i===1?'var(--warning)':'var(--primary)')+'"></span><div><b>'+e[0]+'</b><span>'+e[1]+'</span></div><time>'+e[2]+'</time></div>'}).join("");
+document.getElementById("fleetGrid").innerHTML=fleet.map(function(f){
+ var p=Math.round(f.boarded/f.total*100),cls=f.status==="Ổn định"?"success":"warning";
+ return '<article class="card fleetCard"><div class="fleetTitle"><div><h3>'+f.id+'</h3><p>'+f.route+'</p></div><span class="badge '+cls+'">'+f.status+'</span></div><div class="metrics"><div class="metric"><span>Đã lên</span><strong>'+f.boarded+'/'+f.total+'</strong></div><div class="metric"><span>Đã xuống</span><strong>'+f.left+'/'+f.boarded+'</strong></div><div class="metric"><span>Còn trên xe</span><strong>'+f.onboard+'</strong></div></div><div class="progress"><i style="width:'+p+'%"></i></div><div class="fleetActions"><button class="btn secondary">Chi tiết</button><button class="btn primary" data-go-scan>Quét xe này</button></div></article>';
+}).join("");
+document.querySelectorAll("[data-go-scan]").forEach(function(b){b.addEventListener("click",function(){showView("scanner")})});
+
+function badge(v){return (v==="Đã đăng ký"||v==="Đã lên xe"||v==="Đã xuống xe")?"success":"warning"}
+function renderStudents(q){
+ q=(q||"").trim().toLowerCase();
+ document.getElementById("studentBody").innerHTML=students.filter(function(s){return !q||s.join(" ").toLowerCase().indexOf(q)>=0}).map(function(s){
+  return '<tr><td class="student"><b>'+s[0]+'</b><small>'+s[1]+'</small></td><td>'+s[2]+'</td><td>'+s[3]+'</td><td><span class="badge '+badge(s[4])+'">'+s[4]+'</span></td><td><span class="badge '+badge(s[5])+'">'+s[5]+'</span></td></tr>';
+ }).join("");
+}
+renderStudents("");
+document.getElementById("studentSearch").addEventListener("input",function(e){renderStudents(e.target.value)});
+
+var stream=null,facing="environment",scanning=false,mode="board";
+var video=document.getElementById("camera"),empty=document.getElementById("cameraEmpty"),camBadge=document.getElementById("camBadge"),cameraToggle=document.getElementById("cameraToggle"),scanToggle=document.getElementById("scanToggle"),recognition=document.getElementById("recognition");
+async function startCamera(){
+ try{
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) throw new Error("unsupported");
+  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1280},height:{ideal:720}},audio:false});
+  video.srcObject=stream;empty.style.display="none";camBadge.className="badge success";camBadge.innerHTML='<span class="dot"></span> Camera đang hoạt động';cameraToggle.textContent="Tắt camera";scanToggle.disabled=false;
+ }catch(e){
+  camBadge.className="badge danger";camBadge.textContent="Không mở được camera";empty.style.display="grid";empty.innerHTML="<strong>Không truy cập được camera</strong><span>Kiểm tra quyền camera của trình duyệt và thử lại.</span>";
+ }
+}
+function stopCamera(){
+ if(stream){stream.getTracks().forEach(function(t){t.stop()})}
+ stream=null;video.srcObject=null;empty.style.display="grid";empty.innerHTML='<strong>Camera chưa bật</strong><span>Bấm “Mở camera” để bắt đầu.</span>';camBadge.className="badge info";camBadge.innerHTML='<span class="dot"></span> Camera đang tắt';cameraToggle.textContent="Mở camera";scanToggle.disabled=true;scanning=false;scanToggle.textContent="Bắt đầu quét";
+}
+cameraToggle.addEventListener("click",function(){stream?stopCamera():startCamera()});
+document.getElementById("flip").addEventListener("click",async function(){facing=facing==="environment"?"user":"environment";if(stream){stopCamera();await startCamera()}});
+document.querySelectorAll("[data-mode]").forEach(function(b){b.addEventListener("click",function(){mode=b.getAttribute("data-mode");document.querySelectorAll("[data-mode]").forEach(function(x){x.setAttribute("aria-pressed",String(x===b))})})});
+scanToggle.addEventListener("click",function(){
+ scanning=!scanning;scanToggle.textContent=scanning?"Dừng quét":"Bắt đầu quét";
+ recognition.innerHTML=scanning?'<div class="stateIcon">ID</div><h3>Camera đang chạy</h3><p>Chế độ: '+(mode==="board"?"Lên xe":"Xuống xe")+'. Đang chờ engine nhận diện khuôn mặt trả kết quả.</p>':'<div class="stateIcon">ID</div><h3>Sẵn sàng quét</h3><p>Kết quả chỉ được ghi khi engine nhận diện xác nhận đủ số lần liên tiếp.</p>';
+});
+document.getElementById("notifyTest").addEventListener("click",async function(){
+ if(!("Notification" in window)){alert("Trình duyệt này không hỗ trợ Web Notification.");return}
+ var p=await Notification.requestPermission();alert(p==="granted"?"Đã cấp quyền thông báo. Backend push sẽ được nối ở bước tiếp theo.":"Chưa cấp quyền thông báo.");
+});
+</script>
+</body>
+</html>
