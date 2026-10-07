@@ -6,7 +6,7 @@
   "use strict";
 
   var state = {
-    map:null, L:null, gpsMarker:null, accuracyCircle:null, routeLayer:null,
+    map:null, L:null, gpsMarker:null, accuracyCircle:null, remoteMarker:null, remoteAccuracy:null, remoteLatest:null, routeLayer:null,
     watchId:null, latestGps:null, lastWeatherAt:0, destination:null, origin:null
   };
 
@@ -244,6 +244,43 @@
     if(now-state.lastWeatherAt>10*60*1000) refreshWeather();
   }
 
+  function showRemoteVehicleLocation(payload,label){
+    if(!payload || !isFinite(payload.lat) || !isFinite(payload.lon)) return;
+    state.remoteLatest={
+      lat:Number(payload.lat),lon:Number(payload.lon),
+      accuracy:payload.accuracy_m==null?null:Number(payload.accuracy_m),
+      speed:payload.speed_mps==null?null:Number(payload.speed_mps),
+      heading:payload.heading_deg==null?null:Number(payload.heading_deg),
+      recorded_at:payload.recorded_at||payload.updated_at||new Date().toISOString()
+    };
+    var sync=document.getElementById("syncBadge");
+    if(sync){sync.className="badge success";sync.textContent="Realtime: "+(label||"xe đang trực tuyến")}
+    var hint=document.getElementById("gpsHint");
+    if(hint) hint.textContent="Đang nhận vị trí xe từ Supabase Realtime.";
+    var center=document.getElementById("centerGps");
+    if(center) center.disabled=false;
+
+    if(state.map){
+      var ll=[state.remoteLatest.lat,state.remoteLatest.lon];
+      if(!state.remoteMarker){
+        state.remoteMarker=state.L.circleMarker(ll,{radius:10,weight:3,fillOpacity:.72}).addTo(state.map);
+      }else state.remoteMarker.setLatLng(ll);
+      state.remoteMarker.bindPopup("<b>"+esc(label||"Xe BusCheck")+"</b><br>Realtime · "+esc(fmtTime(state.remoteLatest.recorded_at)));
+      if(!state.remoteAccuracy){
+        state.remoteAccuracy=state.L.circle(ll,{radius:state.remoteLatest.accuracy||10,weight:1,fillOpacity:.04}).addTo(state.map);
+      }else{
+        state.remoteAccuracy.setLatLng(ll);
+        state.remoteAccuracy.setRadius(state.remoteLatest.accuracy||10);
+      }
+      if(state.watchId==null) state.map.setView(ll,16);
+    }
+
+    var parentSmall=document.querySelector("#view-parent .childInfo small");
+    if(parentSmall){
+      parentSmall.textContent=(label||"Xe")+" · cập nhật "+fmtTime(state.remoteLatest.recorded_at)+" · GPS realtime";
+    }
+  }
+
   function gpsError(err){
     var text="Không lấy được GPS";
     if(err && err.code===1) text="Chưa cấp quyền vị trí";
@@ -387,7 +424,8 @@
   function bindEvents(){
     document.getElementById("gpsToggle").addEventListener("click",function(){state.watchId==null?startGps():stopGps()});
     document.getElementById("centerGps").addEventListener("click",function(){
-      if(state.latestGps&&state.map) state.map.setView([state.latestGps.lat,state.latestGps.lon],17);
+      var p=state.latestGps||state.remoteLatest;
+      if(p&&state.map) state.map.setView([p.lat,p.lon],17);
     });
     document.getElementById("clearRoute").addEventListener("click",function(){
       if(state.routeLayer&&state.map){state.map.removeLayer(state.routeLayer);state.routeLayer=null}
@@ -435,7 +473,9 @@
       stopGps:stopGps,
       refreshWeather:refreshWeather,
       calculateRoute:calculateRoute,
-      getLatestGps:function(){return state.latestGps}
+      showRemoteVehicleLocation:showRemoteVehicleLocation,
+      getLatestGps:function(){return state.latestGps},
+      getRemoteGps:function(){return state.remoteLatest}
     };
   }
 
