@@ -98,11 +98,69 @@ main{min-width:0;padding:28px 32px 80px}.topbar{display:flex;align-items:center;
 
 <section class="view" id="view-parent">
   <div class="parentWrap">
-    <div class="parentHead"><div><p class="eyebrow">TÀI KHOẢN PHỤ HUYNH</p><h2>Chào buổi sáng</h2><p>Thông tin quan trọng nhất: con đang ở đâu và trạng thái chuyến.</p></div><span class="badge success">Thông báo đã bật</span></div>
-    <article class="card child"><div class="avatar">NA</div><div class="childInfo"><span>Nguyễn An</span><strong>Đã lên xe an toàn</strong><small>Xe 03 · 07:12 · Điểm đón A</small></div><span class="badge success">Đã lên xe</span></article>
+    <div class="parentHead">
+      <div><p class="eyebrow">TÀI KHOẢN PHỤ HUYNH</p><h2>Theo dõi hành trình của con</h2><p>Vị trí xe, ETA tới điểm đón và trạng thái lên/xuống xe được cập nhật từ dữ liệu thật.</p></div>
+      <span class="badge info" id="parentGpsState">Chờ dữ liệu</span>
+    </div>
+
+    <div class="parentHeroGrid">
+      <article class="card child parentChildHero">
+        <div class="avatar" id="parentChildAvatar">HS</div>
+        <div class="childInfo">
+          <span id="parentChildName">Chưa cấu hình học sinh</span>
+          <strong id="parentTripState">Chưa ghi nhận lên xe</strong>
+          <small id="parentTripMeta">Đăng nhập và ghép mã phụ huynh để bắt đầu.</small>
+        </div>
+        <span class="badge warning" id="parentTripBadge">Chưa ghi nhận</span>
+      </article>
+
+      <div class="parentQuickStats">
+        <article class="card parentStat"><span>Xe</span><strong id="parentVehicleName">—</strong><small id="parentRouteName">Chưa ghép xe</small></article>
+        <article class="card parentStat"><span>Cách điểm đón</span><strong id="parentDistance">—</strong><small>theo tuyến đường</small></article>
+        <article class="card parentStat"><span>ETA tới điểm đón</span><strong id="parentEta">—</strong><small id="parentEtaNote">Chờ GPS xe</small></article>
+      </div>
+    </div>
+
+    <article class="card parentMapCard">
+      <div class="panelHead">
+        <div><h3>Xe đang ở đâu?</h3><p id="parentMapSubtitle">Bản đồ sẽ tự cập nhật khi xe gửi GPS.</p></div>
+        <button class="btn secondary" id="parentCenterMap">Về vị trí xe</button>
+      </div>
+      <div id="parentBusMap" aria-label="Bản đồ realtime dành cho phụ huynh"></div>
+      <div class="parentMapFoot"><span id="parentLastUpdate">Chưa có vị trí xe</span><span id="parentPickupLabel">Điểm đón: chưa thiết lập</span></div>
+    </article>
+
     <div class="parentGrid">
-      <article class="card panel"><h3>Hành trình hôm nay</h3><div class="ptl"><div class="done"><i></i><span><b>07:05</b> Xe đến điểm đón</span></div><div class="done"><i></i><span><b>07:12</b> Nguyễn An đã lên xe</span></div><div><i></i><span><b>Dự kiến 07:40</b> Đến trường</span></div></div></article>
-      <article class="card panel"><h3>Thông báo</h3><p>Phụ huynh có thể nhận push notification khi không mở ứng dụng sau khi backend/Firebase được nối.</p><button class="btn secondary" id="notifyTest" style="margin-top:16px">Kiểm tra quyền thông báo</button></article>
+      <article class="card panel" id="parentRealtimeCard">
+        <div class="panelHead"><div><h3>Kết nối Realtime</h3><p id="parentRealtimeText">Đăng nhập và ghép mã phụ huynh để nhận vị trí xe.</p></div><span class="badge info" id="parentRealtimeBadge">Offline</span></div>
+        <button class="btn primary" id="parentOpenMap">Mở trang GPS đầy đủ</button>
+      </article>
+
+      <article class="card panel">
+        <div class="panelHead"><div><h3>Điểm đón của con</h3><p>Lưu một lần, BusCheck sẽ tự tính khoảng cách và ETA từ xe tới điểm này.</p></div></div>
+        <div class="parentPickupForm">
+          <input id="parentChildInput" class="search" placeholder="Tên học sinh">
+          <input id="parentPickupInput" class="search" placeholder="Địa chỉ hoặc tên điểm đón">
+          <div class="parentPickupActions">
+            <button class="btn secondary" id="parentUseMyLocation">Dùng vị trí hiện tại</button>
+            <button class="btn primary" id="parentSavePickup">Lưu điểm đón</button>
+          </div>
+          <div class="parentFormMsg" id="parentFormMsg">Chưa có điểm đón được lưu.</div>
+        </div>
+      </article>
+
+      <article class="card panel">
+        <h3>Hành trình hôm nay</h3>
+        <div class="ptl" id="parentTimeline">
+          <div><i></i><span><b>Chưa có sự kiện</b> Hệ thống đang chờ dữ liệu quét lên/xuống xe.</span></div>
+        </div>
+      </article>
+
+      <article class="card panel">
+        <h3>Thông báo</h3>
+        <p>Cho phép thông báo để nhận cảnh báo khi có thay đổi quan trọng về chuyến xe.</p>
+        <button class="btn secondary" id="notifyTest" style="margin-top:16px">Kiểm tra quyền thông báo</button>
+      </article>
     </div>
   </div>
 </section>
@@ -188,5 +246,5 @@ document.getElementById("notifyTest").addEventListener("click",async function(){
  var p=await Notification.requestPermission();alert(p==="granted"?"Đã cấp quyền thông báo. Backend push sẽ được nối ở bước tiếp theo.":"Chưa cấp quyền thông báo.");
 });
 </script>
-<script src="buscheck-mobility.js"></script>\n<script src="buscheck-realtime.js"></script>\n</body>
+<script src="buscheck-mobility.js"></script>\n<script src="buscheck-realtime.js"></script>\n<script src="buscheck-parent.js"></script>\n</body>
 </html>
