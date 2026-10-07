@@ -51,7 +51,7 @@
       var css=document.createElement("link");
       css.rel="stylesheet";
       css.href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-      css.integrity="sha256-p4NxAoJBhIINfQ3ynJpXFrXPUjaP5+vF3C5zN67xq0o=";
+      css.integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=";
       css.crossOrigin="";
       document.head.appendChild(css);
 
