@@ -6,7 +6,7 @@
   "use strict";
 
   var SUPABASE_URL="https://medsjppfuwmdxmvpclqs.supabase.co";
-  var SUPABASE_KEY="sb_publishable__19R9ib4XhBunn89i73tng_ISFUnDjg";
+  var SUPABASE_KEY="sb_publishable_O-ePmnjsw0G5bgsPay1jDQ_MlUychkT";
   var client=null, session=null, accessList=[], selected=null, channel=null;
   var lastSentAt=0, sending=false;
 
@@ -135,11 +135,13 @@
       selected=null;accessList=[];
       if(channel && client){await client.removeChannel(channel);channel=null}
       updateParentStatus(null);
+      window.dispatchEvent(new CustomEvent("buscheck:auth-state",{detail:{session:null}}));
       return;
     }
     loggedOut.hidden=true;loggedIn.hidden=false;
     document.getElementById("rtUserEmail").textContent=session.user.email||"BusCheck user";
     setConnection("Đã đăng nhập","success");
+    window.dispatchEvent(new CustomEvent("buscheck:auth-state",{detail:{session:session}}));
     await loadAccess();
   }
 
@@ -248,6 +250,7 @@
       : "Bạn đang ở quyền phụ huynh. Vị trí xe sẽ tự cập nhật qua Supabase Realtime."
     );
     updateParentStatus(selected);
+    window.dispatchEvent(new CustomEvent("buscheck:vehicle-selected",{detail:{item:selected}}));
     await subscribeVehicle(selected);
   }
 
@@ -276,6 +279,7 @@
   }
 
   function showRemote(row,item){
+    window.dispatchEvent(new CustomEvent("buscheck:remote-location",{detail:{row:row,item:item}}));
     if(window.BusCheckMobility && window.BusCheckMobility.showRemoteVehicleLocation){
       window.BusCheckMobility.showRemoteVehicleLocation(row,item.vehicle.label);
     }
@@ -363,8 +367,11 @@
       window.BusCheckRealtime={
         client:client,
         refreshAccess:loadAccess,
-        getSelected:function(){return selected}
+        getSelected:function(){return selected},
+        getSession:function(){return session},
+        getAccessList:function(){return accessList.slice()}
       };
+      window.dispatchEvent(new CustomEvent("buscheck:realtime-ready",{detail:{session:session}}));
     }catch(e){
       setConnection("Không tải được Supabase","danger");
       setMsg("rtAuthMsg","Không thể tải kết nối Supabase. Kiểm tra mạng rồi tải lại trang.","error");
